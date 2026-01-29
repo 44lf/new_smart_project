@@ -1,0 +1,1885 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/.env.example b/.env.example
+new file mode 100644
+index 0000000000000000000000000000000000000000..70be6204bd162c8c908aec81d1d129ea44c760b9
+--- /dev/null
++++ b/.env.example
+@@ -0,0 +1,43 @@
++APP_HOST=0.0.0.0
++APP_PORT=8018
++LOG_LEVEL=INFO
++
++MYSQL_HOST=localhost
++MYSQL_PORT=3306
++MYSQL_DB=nutrition
++MYSQL_USER=nutrition
++MYSQL_PASSWORD=nutrition
++MYSQL_URI=mysql+aiomysql://nutrition:nutrition@localhost:3306/nutrition
++
++REDIS_HOST=localhost
++REDIS_PORT=6379
++REDIS_DB=0
++REDIS_PASSWORD=
++
++MINIO_ENDPOINT=localhost:9000
++MINIO_ACCESS_KEY=minioadmin
++MINIO_SECRET_KEY=minioadmin
++MINIO_BUCKET=kb
++
++MILVUS_HOST=localhost
++MILVUS_PORT=19530
++MILVUS_COLLECTION=knowledge_chunks
++
++OLLAMA_BASE_URL=http://localhost:11434
++OLLAMA_LLM_MODEL=llama3.1
++OLLAMA_EMBED_MODEL=nomic-embed-text
++OLLAMA_RERANK_MODEL=
++
++DIFY_BASE_URL=http://localhost:5001
++DIFY_API_KEY=
++DIFY_APP_ID=
++
++JWT_SECRET=change_me
++JWT_ALGORITHM=HS256
++JWT_EXPIRE_MINUTES=60
++CACHE_TTL_SECONDS=600
++CACHE_NAMESPACE=rag
++RAG_BM25_WEIGHT=0.4
++RAG_VECTOR_WEIGHT=0.6
++RAG_TOP_K=5
++ALLOW_WRITE_SQL=false
+diff --git a/Dockerfile b/Dockerfile
+new file mode 100644
+index 0000000000000000000000000000000000000000..667e452a5ea4fe1249d99a89c9e9df910e41868b
+--- /dev/null
++++ b/Dockerfile
+@@ -0,0 +1,10 @@
++FROM python:3.11-slim
++
++WORKDIR /app
++
++COPY requirements.txt ./
++RUN pip install --no-cache-dir -r requirements.txt
++
++COPY . ./
++
++CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8018"]
+diff --git a/README.md b/README.md
+index 24b0666d43d103b18a3cae4fe4c229c05df74401..fe183cd9fb7f61230a617c1b96ca3621f44cbef2 100644
+GIT binary patch
+literal 1698
+zcmZ`)ZExZ@5dO}u7^z=C2T9w#l~(9(rK;CkRZ9y6bYB;f42ieKc5Nqx{q^_QKv;CQ
+zLJIMCUY~hpaz)Qga56}vX)gUM-FeU6Z&?SLDG@ftZF{||E1I_KTFLLdWi35fXTEb0
+z;(sek_9ST2C^hmy6tDER@ZoOuNNXHemjoyDJYU>iU*D4M!nqhubm4~ds?EFNvSO0D
+zVxMyAKS}*KrQhgDs<!ciA<gf;5Vt}#A}S1N$-8j7c$rWu1^p#A`ymO$e7LWL3!aQk
+zek#`Nl0}xvS#nX+B4*ng(QF@T)c+y7xk033_K-jAqu>6z@lpd6Dn$?j$md)FgMJ~3
+zn&bJ98}(a2f>J#mM|sS>Z`KK`C>B+^m?|Z<g8Gxm69V#f&1H$2eX3z1bcN)lj;>=t
+z)IZfYNV&f>5+Eaa7vlMfZU!`SY=vWD-AZS4>|bxSTCIhzdxfP8@{D(4YZa$MygV4+
+z4i2uUWQ%68E+qTTwlrv=qrz;h@l1`SQF*rgFrY^b@(3k=aDoQ`nLKdWiq6M&@81-S
+zYEq^Usy05*sQHNqBYP&r`Rxz5anc5#!#bA;li}qY`}YCO8%^L@7syHr>VSg^;T$=B
+zYoz0dh0nq+^qN){#%U7PW?KL}#tV%`DWmHw{cyC#1^RS-^XU*P5*aA?F}ksM7gfb>
+zOmzr$oabFZ<EWoUwF5m&@hct2&^jRhaX=5d6m1IRe=ekGoccu!165&V_T7WApF!{Q
+z@q`V1<vl&<(i(}%k<eWe>M^Zm)5Vf<80P|l+;Js+V7D6n=SrDM>J==%o<{P*yc^WK
+zvC4=tdie5i^nJeENX0&S!N^|NV+``QhTZ;~M?W~KoEUzg7vgBg?gxi%UFO-{B}dW4
+zKhigmh-u0%{Iv2%j(Ly!ASyoH&v2a*u34y1pFM92n?vTpnnk!2`?&uK_7}J%C(-D1
+zn}&)e00kxa(2EoWOB!$<^ICDhnA6K_L7)F5?89-#-J{ZI19edb*hY52E~1#({fVdl
+z%e=1h&jyw#@!sf-tQstY<En`(G3^qJ_<<Lg6k5f-u*xDPX}x03mBJE>UxR2Nu@80>
+z_X-$eMuh_^ToP_K(xIfrb2MHW!q*{gs!%h=&Kfw<0X@V1)e2%X5^jRrh$8qQIiRw#
+Yhpl^>a_o%a_1ju%0bV5PplamyFT%Sv-T(jq
+
+literal 44
+ucmezWPnki1A&()Ip`0O}p_n0;A(5eop#;b-0MhvkSwNX&AfK0kiva-t1_^!u
+
+diff --git a/app/__init__.py b/app/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/app/core/__init__.py b/app/core/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/app/core/config.py b/app/core/config.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..de46dbc2421ff55b34165e99d93be95add60cfd2
+--- /dev/null
++++ b/app/core/config.py
+@@ -0,0 +1,54 @@
++from pydantic_settings import BaseSettings, SettingsConfigDict
++
++
++class Settings(BaseSettings):
++    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
++
++    app_host: str = "0.0.0.0"
++    app_port: int = 8018
++    log_level: str = "INFO"
++
++    mysql_host: str = "localhost"
++    mysql_port: int = 3306
++    mysql_db: str = "nutrition"
++    mysql_user: str = "nutrition"
++    mysql_password: str = "nutrition"
++    mysql_uri: str = "mysql+aiomysql://nutrition:nutrition@localhost:3306/nutrition"
++
++    redis_host: str = "localhost"
++    redis_port: int = 6379
++    redis_db: int = 0
++    redis_password: str | None = None
++
++    minio_endpoint: str = "localhost:9000"
++    minio_access_key: str = "minioadmin"
++    minio_secret_key: str = "minioadmin"
++    minio_bucket: str = "kb"
++
++    milvus_host: str = "localhost"
++    milvus_port: int = 19530
++    milvus_collection: str = "knowledge_chunks"
++
++    ollama_base_url: str = "http://localhost:11434"
++    ollama_llm_model: str = "llama3.1"
++    ollama_embed_model: str = "nomic-embed-text"
++    ollama_rerank_model: str | None = None
++
++    dify_base_url: str = "http://localhost:5001"
++    dify_api_key: str | None = None
++    dify_app_id: str | None = None
++
++    jwt_secret: str = "change_me"
++    jwt_algorithm: str = "HS256"
++    jwt_expire_minutes: int = 60
++
++    cache_ttl_seconds: int = 600
++    cache_namespace: str = "rag"
++    rag_bm25_weight: float = 0.4
++    rag_vector_weight: float = 0.6
++    rag_top_k: int = 5
++
++    allow_write_sql: bool = False
++
++
++settings = Settings()
+diff --git a/app/core/deps.py b/app/core/deps.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..f75d517a7a1cc6c0b3ddc62ee0f05448c88f4355
+--- /dev/null
++++ b/app/core/deps.py
+@@ -0,0 +1,10 @@
++from collections.abc import AsyncGenerator
++
++from sqlalchemy.ext.asyncio import AsyncSession
++
++from app.integrations.mysql import async_session
++
++
++async def get_db() -> AsyncGenerator[AsyncSession, None]:
++    async with async_session() as session:
++        yield session
+diff --git a/app/core/exceptions.py b/app/core/exceptions.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..dd1c40ea5f14f3144b6517099a024906bf63bbf7
+--- /dev/null
++++ b/app/core/exceptions.py
+@@ -0,0 +1,6 @@
++from fastapi import HTTPException
++
++
++class AppError(HTTPException):
++    def __init__(self, status_code: int, detail: str):
++        super().__init__(status_code=status_code, detail=detail)
+diff --git a/app/core/logging.py b/app/core/logging.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..80d5922c66e085aef21600d33bd0e9a5546ff0f0
+--- /dev/null
++++ b/app/core/logging.py
+@@ -0,0 +1,27 @@
++import json
++import logging
++from datetime import datetime
++
++from app.core.config import settings
++
++
++class JsonFormatter(logging.Formatter):
++    def format(self, record: logging.LogRecord) -> str:
++        payload = {
++            "timestamp": datetime.utcnow().isoformat(),
++            "level": record.levelname,
++            "logger": record.name,
++            "message": record.getMessage(),
++        }
++        if record.exc_info:
++            payload["exc_info"] = self.formatException(record.exc_info)
++        return json.dumps(payload, ensure_ascii=False)
++
++
++def configure_logging() -> None:
++    handler = logging.StreamHandler()
++    handler.setFormatter(JsonFormatter())
++    root = logging.getLogger()
++    root.handlers.clear()
++    root.addHandler(handler)
++    root.setLevel(settings.log_level.upper())
+diff --git a/app/core/security.py b/app/core/security.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..3ab2af3b90e75cd1d92ed7b44fc1e5ae27726fc3
+--- /dev/null
++++ b/app/core/security.py
+@@ -0,0 +1,22 @@
++from datetime import datetime, timedelta
++
++from jose import jwt
++from passlib.context import CryptContext
++
++from app.core.config import settings
++
++pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
++
++
++def hash_password(password: str) -> str:
++    return pwd_context.hash(password)
++
++
++def verify_password(password: str, hashed: str) -> bool:
++    return pwd_context.verify(password, hashed)
++
++
++def create_access_token(subject: str) -> str:
++    expire = datetime.utcnow() + timedelta(minutes=settings.jwt_expire_minutes)
++    payload = {"sub": subject, "exp": expire}
++    return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
+diff --git a/app/integrations/__init__.py b/app/integrations/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/app/integrations/dify_client.py b/app/integrations/dify_client.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..df6f8567be8b0931164281b5f7f5c9c5b2568c3e
+--- /dev/null
++++ b/app/integrations/dify_client.py
+@@ -0,0 +1,32 @@
++from typing import Any
++
++import httpx
++
++from app.core.config import settings
++
++
++def _headers() -> dict[str, str]:
++    headers = {"Content-Type": "application/json"}
++    if settings.dify_api_key:
++        headers["Authorization"] = f"Bearer {settings.dify_api_key}"
++    return headers
++
++
++class DifyClient:
++    def __init__(self) -> None:
++        self.base_url = settings.dify_base_url.rstrip("/")
++        self.headers = _headers()
++
++    async def chat_messages(self, payload: dict[str, Any]) -> dict[str, Any]:
++        url = f"{self.base_url}/v1/chat-messages"
++        async with httpx.AsyncClient(timeout=30) as client:
++            response = await client.post(url, json=payload, headers=self.headers)
++            response.raise_for_status()
++            return response.json()
++
++    async def run_workflow(self, payload: dict[str, Any]) -> dict[str, Any]:
++        url = f"{self.base_url}/v1/workflows/run"
++        async with httpx.AsyncClient(timeout=30) as client:
++            response = await client.post(url, json=payload, headers=self.headers)
++            response.raise_for_status()
++            return response.json()
+diff --git a/app/integrations/milvus_client.py b/app/integrations/milvus_client.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..175c10560220dab7bc3ad6c0d4ee5ff0b4e5d902
+--- /dev/null
++++ b/app/integrations/milvus_client.py
+@@ -0,0 +1,31 @@
++from pymilvus import Collection, CollectionSchema, DataType, FieldSchema, connections, utility
++
++from app.core.config import settings
++
++
++def connect_milvus() -> None:
++    connections.connect(host=settings.milvus_host, port=settings.milvus_port)
++
++
++def ensure_collection() -> Collection:
++    connect_milvus()
++    if utility.has_collection(settings.milvus_collection):
++        return Collection(settings.milvus_collection)
++
++    fields = [
++        FieldSchema(name="chunk_id", dtype=DataType.VARCHAR, is_primary=True, max_length=64),
++        FieldSchema(name="file_id", dtype=DataType.VARCHAR, max_length=64),
++        FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=65535),
++        FieldSchema(name="metadata", dtype=DataType.JSON),
++        FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=768),
++    ]
++    schema = CollectionSchema(fields, description="knowledge chunks")
++    collection = Collection(settings.milvus_collection, schema=schema)
++    return collection
++
++
++def ensure_index(collection: Collection) -> None:
++    if collection.has_index():
++        return
++    index_params = {"metric_type": "IP", "index_type": "IVF_FLAT", "params": {"nlist": 128}}
++    collection.create_index("embedding", index_params)
+diff --git a/app/integrations/minio_client.py b/app/integrations/minio_client.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..ab79e330f326fb54ce810e21d1afa5e64ec272a1
+--- /dev/null
++++ b/app/integrations/minio_client.py
+@@ -0,0 +1,12 @@
++from minio import Minio
++
++from app.core.config import settings
++
++
++def get_minio_client() -> Minio:
++    return Minio(
++        settings.minio_endpoint,
++        access_key=settings.minio_access_key,
++        secret_key=settings.minio_secret_key,
++        secure=False,
++    )
+diff --git a/app/integrations/mysql.py b/app/integrations/mysql.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..f177a8cf94b016e09da82cb4315574d75588e096
+--- /dev/null
++++ b/app/integrations/mysql.py
+@@ -0,0 +1,6 @@
++from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
++
++from app.core.config import settings
++
++engine = create_async_engine(settings.mysql_uri, pool_pre_ping=True, future=True)
++async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+diff --git a/app/integrations/ollama_client.py b/app/integrations/ollama_client.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..423b52a99689cf0f975f14ce334132987e741594
+--- /dev/null
++++ b/app/integrations/ollama_client.py
+@@ -0,0 +1,12 @@
++from langchain_community.chat_models import ChatOllama
++from langchain_community.embeddings import OllamaEmbeddings
++
++from app.core.config import settings
++
++
++def get_llm() -> ChatOllama:
++    return ChatOllama(base_url=settings.ollama_base_url, model=settings.ollama_llm_model, temperature=0.2)
++
++
++def get_embeddings() -> OllamaEmbeddings:
++    return OllamaEmbeddings(base_url=settings.ollama_base_url, model=settings.ollama_embed_model)
+diff --git a/app/integrations/redis_client.py b/app/integrations/redis_client.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..a5a73c330ac27f21afd3d10a60f6ebd06e753994
+--- /dev/null
++++ b/app/integrations/redis_client.py
+@@ -0,0 +1,13 @@
++from redis.asyncio import Redis
++
++from app.core.config import settings
++
++
++def get_redis() -> Redis:
++    return Redis(
++        host=settings.redis_host,
++        port=settings.redis_port,
++        db=settings.redis_db,
++        password=settings.redis_password,
++        decode_responses=True,
++    )
+diff --git a/app/main.py b/app/main.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..c0dc203a946abbc5d7554f8b5852e52d8d27eef1
+--- /dev/null
++++ b/app/main.py
+@@ -0,0 +1,27 @@
++from fastapi import FastAPI
++from fastapi.middleware.cors import CORSMiddleware
++
++from app.core.logging import configure_logging
++from app.routers import auth, knowledge, mcp, rag, text2sql, viz
++
++
++def create_app() -> FastAPI:
++    configure_logging()
++    app = FastAPI(title="Nutrition Risk Assessment", version="1.0.0")
++    app.add_middleware(
++        CORSMiddleware,
++        allow_origins=["*"],
++        allow_credentials=True,
++        allow_methods=["*"],
++        allow_headers=["*"],
++    )
++    app.include_router(auth.router)
++    app.include_router(knowledge.router)
++    app.include_router(rag.router)
++    app.include_router(text2sql.router)
++    app.include_router(viz.router)
++    app.include_router(mcp.router)
++    return app
++
++
++app = create_app()
+diff --git a/app/models/__init__.py b/app/models/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..42b2874ddc26fc4d7bb934788cf58a4d82dcc7ec
+--- /dev/null
++++ b/app/models/__init__.py
+@@ -0,0 +1,5 @@
++from app.models.assessment import UserHealthRiskAssessment
++from app.models.knowledge_file import KnowledgeFile
++from app.models.user import User
++
++__all__ = ["User", "KnowledgeFile", "UserHealthRiskAssessment"]
+diff --git a/app/models/assessment.py b/app/models/assessment.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..cd5a1c1ad8454d66aea5780a5008f5e82d4d47ff
+--- /dev/null
++++ b/app/models/assessment.py
+@@ -0,0 +1,27 @@
++from sqlalchemy import Integer, String, Text
++from sqlalchemy.orm import Mapped, mapped_column
++
++from app.models.base import Base
++
++
++class UserHealthRiskAssessment(Base):
++    __tablename__ = "user_health_risk_assessment"
++
++    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
++    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
++    user_name: Mapped[str] = mapped_column(String(128), nullable=False)
++    sex: Mapped[str] = mapped_column(String(16), nullable=False)
++    age: Mapped[int] = mapped_column(Integer, nullable=False)
++    assessment_time: Mapped[str] = mapped_column(String(64), nullable=False)
++    assessment_count: Mapped[int] = mapped_column(Integer, default=1)
++    total_score: Mapped[int] = mapped_column(Integer, nullable=False)
++    nutritional_impairment_score: Mapped[int] = mapped_column(Integer, nullable=False)
++    disease_severity_score: Mapped[int] = mapped_column(Integer, nullable=False)
++    age_score: Mapped[int] = mapped_column(Integer, nullable=False)
++    assessment_basis: Mapped[str] = mapped_column(Text, nullable=False)
++    risk_level: Mapped[str] = mapped_column(String(32), nullable=False)
++    recommendations: Mapped[str] = mapped_column(Text, nullable=False)
++    bmi: Mapped[str | None] = mapped_column(String(32))
++    weight_change: Mapped[str | None] = mapped_column(String(64))
++    disease_condition: Mapped[str | None] = mapped_column(String(255))
++    dietary_intake: Mapped[str | None] = mapped_column(String(255))
+diff --git a/app/models/base.py b/app/models/base.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..fbe6e1e69d5f4057c0b788a71a8662b72ca621a8
+--- /dev/null
++++ b/app/models/base.py
+@@ -0,0 +1,9 @@
++from datetime import datetime
++
++from sqlalchemy import DateTime, func
++from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
++
++
++class Base(DeclarativeBase):
++    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
++    updated_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
+diff --git a/app/models/knowledge_file.py b/app/models/knowledge_file.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..4a3dc3fe7c4477a9486e10782a21e9932c6b1753
+--- /dev/null
++++ b/app/models/knowledge_file.py
+@@ -0,0 +1,18 @@
++import uuid
++
++from sqlalchemy import Integer, String
++from sqlalchemy.orm import Mapped, mapped_column
++
++from app.models.base import Base
++
++
++class KnowledgeFile(Base):
++    __tablename__ = "knowledge_files"
++
++    file_id: Mapped[str] = mapped_column(String(64), primary_key=True, default=lambda: str(uuid.uuid4()))
++    file_name: Mapped[str] = mapped_column(String(255), nullable=False)
++    object_key: Mapped[str] = mapped_column(String(255), nullable=False)
++    file_type: Mapped[str] = mapped_column(String(20), nullable=False)
++    file_size: Mapped[int] = mapped_column(Integer, nullable=False)
++    upload_time: Mapped[str] = mapped_column(String(64), nullable=False)
++    uploader: Mapped[str] = mapped_column(String(128), nullable=False)
+diff --git a/app/models/user.py b/app/models/user.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..5d62b65efc72311bad77f27c26482da40c649900
+--- /dev/null
++++ b/app/models/user.py
+@@ -0,0 +1,13 @@
++from sqlalchemy import Integer, String
++from sqlalchemy.orm import Mapped, mapped_column
++
++from app.models.base import Base
++
++
++class User(Base):
++    __tablename__ = "users"
++
++    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
++    username: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
++    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
++    role: Mapped[str] = mapped_column(String(32), default="user", nullable=False)
+diff --git a/app/repositories/assessment_repo.py b/app/repositories/assessment_repo.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..1e30c2fcbe158f49afa87c5749e182e8eba71560
+--- /dev/null
++++ b/app/repositories/assessment_repo.py
+@@ -0,0 +1,23 @@
++from sqlalchemy import select
++from sqlalchemy.ext.asyncio import AsyncSession
++
++from app.models.assessment import UserHealthRiskAssessment
++
++
++class AssessmentRepository:
++    def __init__(self, session: AsyncSession) -> None:
++        self.session = session
++
++    async def create(self, assessment: UserHealthRiskAssessment) -> UserHealthRiskAssessment:
++        self.session.add(assessment)
++        await self.session.commit()
++        await self.session.refresh(assessment)
++        return assessment
++
++    async def latest_by_user(self, user_id: int) -> UserHealthRiskAssessment | None:
++        result = await self.session.execute(
++            select(UserHealthRiskAssessment)
++            .where(UserHealthRiskAssessment.user_id == user_id)
++            .order_by(UserHealthRiskAssessment.created_at.desc())
++        )
++        return result.scalars().first()
+diff --git a/app/repositories/knowledge_repo.py b/app/repositories/knowledge_repo.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..95e47676b6eeaf546b6bb5604d57006084490a0f
+--- /dev/null
++++ b/app/repositories/knowledge_repo.py
+@@ -0,0 +1,25 @@
++from sqlalchemy import select
++from sqlalchemy.ext.asyncio import AsyncSession
++
++from app.models.knowledge_file import KnowledgeFile
++
++
++class KnowledgeRepository:
++    def __init__(self, session: AsyncSession) -> None:
++        self.session = session
++
++    async def create(self, knowledge: KnowledgeFile) -> KnowledgeFile:
++        self.session.add(knowledge)
++        await self.session.commit()
++        await self.session.refresh(knowledge)
++        return knowledge
++
++    async def list_paginated(self, offset: int, limit: int) -> list[KnowledgeFile]:
++        result = await self.session.execute(
++            select(KnowledgeFile).order_by(KnowledgeFile.created_at.desc()).offset(offset).limit(limit)
++        )
++        return list(result.scalars().all())
++
++    async def get_by_id(self, file_id: str) -> KnowledgeFile | None:
++        result = await self.session.execute(select(KnowledgeFile).where(KnowledgeFile.file_id == file_id))
++        return result.scalars().first()
+diff --git a/app/repositories/user_repo.py b/app/repositories/user_repo.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..f605e4adbbcaa2fb97ec67530e086aa7e3a4b18c
+--- /dev/null
++++ b/app/repositories/user_repo.py
+@@ -0,0 +1,19 @@
++from sqlalchemy import select
++from sqlalchemy.ext.asyncio import AsyncSession
++
++from app.models.user import User
++
++
++class UserRepository:
++    def __init__(self, session: AsyncSession) -> None:
++        self.session = session
++
++    async def get_by_username(self, username: str) -> User | None:
++        result = await self.session.execute(select(User).where(User.username == username))
++        return result.scalars().first()
++
++    async def create(self, user: User) -> User:
++        self.session.add(user)
++        await self.session.commit()
++        await self.session.refresh(user)
++        return user
+diff --git a/app/routers/__init__.py b/app/routers/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..60afb191f7c9229475859526f4a6f8d28363a448
+--- /dev/null
++++ b/app/routers/__init__.py
+@@ -0,0 +1,3 @@
++from app.routers import auth, knowledge, mcp, rag, text2sql, viz
++
++__all__ = ["auth", "knowledge", "mcp", "rag", "text2sql", "viz"]
+diff --git a/app/routers/auth.py b/app/routers/auth.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..a6e0b8c086be06f1b919b1011143a72817e87ed8
+--- /dev/null
++++ b/app/routers/auth.py
+@@ -0,0 +1,32 @@
++from fastapi import APIRouter, Depends
++from sqlalchemy.ext.asyncio import AsyncSession
++
++from app.core.deps import get_db
++from app.core.exceptions import AppError
++from app.core.security import create_access_token, hash_password, verify_password
++from app.models.user import User
++from app.repositories.user_repo import UserRepository
++from app.schemas.user import TokenOut, UserCreate, UserOut
++
++router = APIRouter(prefix="/api/auth", tags=["auth"])
++
++
++@router.post("/register", response_model=UserOut)
++async def register(payload: UserCreate, session: AsyncSession = Depends(get_db)) -> UserOut:
++    repo = UserRepository(session)
++    existing = await repo.get_by_username(payload.username)
++    if existing:
++        raise AppError(400, "Username already exists")
++    user = User(username=payload.username, password_hash=hash_password(payload.password), role="user")
++    saved = await repo.create(user)
++    return UserOut(id=saved.id, username=saved.username, role=saved.role)
++
++
++@router.post("/login", response_model=TokenOut)
++async def login(payload: UserCreate, session: AsyncSession = Depends(get_db)) -> TokenOut:
++    repo = UserRepository(session)
++    user = await repo.get_by_username(payload.username)
++    if not user or not verify_password(payload.password, user.password_hash):
++        raise AppError(401, "Invalid credentials")
++    token = create_access_token(str(user.id))
++    return TokenOut(access_token=token)
+diff --git a/app/routers/knowledge.py b/app/routers/knowledge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..fba18b4eed1352a925e5a641a37d1625521febc2
+--- /dev/null
++++ b/app/routers/knowledge.py
+@@ -0,0 +1,32 @@
++from fastapi import APIRouter, Depends, File, UploadFile
++from sqlalchemy.ext.asyncio import AsyncSession
++
++from app.core.deps import get_db
++from app.repositories.knowledge_repo import KnowledgeRepository
++from app.schemas.knowledge import KnowledgeFileOut, KnowledgeUploadResult
++from app.services.knowledge import KnowledgeService
++
++router = APIRouter(prefix="/api/knowledge", tags=["knowledge"])
++
++
++@router.post("/upload", response_model=KnowledgeUploadResult)
++async def upload_knowledge(
++    file: UploadFile = File(...),
++    session: AsyncSession = Depends(get_db),
++) -> KnowledgeUploadResult:
++    content = await file.read()
++    service = KnowledgeService(KnowledgeRepository(session))
++    result = await service.upload_file(file.filename, content, uploader="system")
++    return KnowledgeUploadResult(**result)
++
++
++@router.get("/files", response_model=list[KnowledgeFileOut])
++async def list_files(
++    page: int = 1,
++    size: int = 10,
++    session: AsyncSession = Depends(get_db),
++) -> list[KnowledgeFileOut]:
++    repo = KnowledgeRepository(session)
++    offset = (page - 1) * size
++    items = await repo.list_paginated(offset, size)
++    return [KnowledgeFileOut(**item.__dict__) for item in items]
+diff --git a/app/routers/mcp.py b/app/routers/mcp.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..d476ddaed340bd64cac9fc507eecbc0d2c949739
+--- /dev/null
++++ b/app/routers/mcp.py
+@@ -0,0 +1,60 @@
++from fastapi import APIRouter, Depends
++from sqlalchemy import text
++
++from app.core.deps import get_db
++from app.integrations.minio_client import get_minio_client
++from app.integrations.milvus_client import connect_milvus
++from app.integrations.redis_client import get_redis
++from app.schemas.mcp import Heartbeat, ServiceRegistration
++from app.services.mcp import MCPRegistry
++
++router = APIRouter(tags=["mcp"])
++registry = MCPRegistry()
++
++
++@router.get("/health")
++async def health(session=Depends(get_db)) -> dict:
++    mysql_status = "ok"
++    redis_status = "ok"
++    milvus_status = "ok"
++    minio_status = "ok"
++    try:
++        await session.execute(text("SELECT 1"))
++    except Exception as exc:  # noqa: BLE001
++        mysql_status = str(exc)
++    try:
++        redis = get_redis()
++        await redis.ping()
++    except Exception as exc:  # noqa: BLE001
++        redis_status = str(exc)
++    try:
++        connect_milvus()
++    except Exception as exc:  # noqa: BLE001
++        milvus_status = str(exc)
++    try:
++        minio = get_minio_client()
++        minio.list_buckets()
++    except Exception as exc:  # noqa: BLE001
++        minio_status = str(exc)
++    return {
++        "mysql": mysql_status,
++        "redis": redis_status,
++        "milvus": milvus_status,
++        "minio": minio_status,
++    }
++
++
++@router.post("/mcp/heartbeat")
++async def heartbeat(payload: Heartbeat) -> dict:
++    return registry.heartbeat(payload)
++
++
++@router.post("/mcp/services/register")
++async def register_service(payload: ServiceRegistration) -> dict:
++    registry.register(payload)
++    return {"status": "registered"}
++
++
++@router.get("/mcp/services")
++async def list_services() -> dict:
++    return registry.list_services()
+diff --git a/app/routers/rag.py b/app/routers/rag.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..bee0a515b87e0c6d8f6e6f8c62b7ad84223628b0
+--- /dev/null
++++ b/app/routers/rag.py
+@@ -0,0 +1,13 @@
++from fastapi import APIRouter
++
++from app.schemas.rag import RagQuery, RagResponse
++from app.services.rag import RagService
++
++router = APIRouter(prefix="/api/rag", tags=["rag"])
++
++
++@router.post("/query_score", response_model=RagResponse)
++async def query_score(payload: RagQuery) -> RagResponse:
++    service = RagService()
++    result = await service.query_score(payload.user_query, payload.top_k, payload.filters)
++    return RagResponse(**result)
+diff --git a/app/routers/text2sql.py b/app/routers/text2sql.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..d35b545ec6a604570907f704b80c13c5c46c4882
+--- /dev/null
++++ b/app/routers/text2sql.py
+@@ -0,0 +1,22 @@
++from fastapi import APIRouter, Depends
++from sqlalchemy.ext.asyncio import AsyncSession
++
++from app.core.deps import get_db
++from app.schemas.text2sql import Text2SQLQueryRequest, Text2SQLResponse, Text2SQLTrainRequest
++from app.services.text2sql import Text2SQLService
++
++router = APIRouter(prefix="/api/text2sql", tags=["text2sql"])
++
++
++@router.post("/train")
++async def train(payload: Text2SQLTrainRequest, session: AsyncSession = Depends(get_db)) -> dict:
++    service = Text2SQLService(session)
++    await service.train(payload.schema, payload.examples)
++    return {"status": "ok"}
++
++
++@router.post("/query", response_model=Text2SQLResponse)
++async def query(payload: Text2SQLQueryRequest, session: AsyncSession = Depends(get_db)) -> Text2SQLResponse:
++    service = Text2SQLService(session)
++    result = await service.query(payload.query)
++    return Text2SQLResponse(**result)
+diff --git a/app/routers/viz.py b/app/routers/viz.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..59d60c9dfd1c1a08bfa65933b6c6629b22bb10d2
+--- /dev/null
++++ b/app/routers/viz.py
+@@ -0,0 +1,12 @@
++from fastapi import APIRouter
++
++from app.schemas.viz import EChartsRequest, EChartsResponse
++from app.services.echarts import generate_echarts_option
++
++router = APIRouter(prefix="/api/viz", tags=["viz"])
++
++
++@router.post("/echarts", response_model=EChartsResponse)
++async def echarts(payload: EChartsRequest) -> EChartsResponse:
++    option = generate_echarts_option(payload.columns, payload.rows)
++    return EChartsResponse(echarts_option=option)
+diff --git a/app/schemas/assessment.py b/app/schemas/assessment.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..bd7433160739bcebdb7de894e966a94f0d5e9947
+--- /dev/null
++++ b/app/schemas/assessment.py
+@@ -0,0 +1,19 @@
++from pydantic import BaseModel
++
++
++class ScoreResult(BaseModel):
++    total_score: int
++    nutritional_impairment_score: int
++    disease_severity_score: int
++    age_score: int
++    risk_level: str
++    recommendations: str
++    assessment_basis: str
++
++
++class SourceBasis(BaseModel):
++    chunk_id: str
++    file_id: str
++    snippet: str
++    score: float
++    reason: str
+diff --git a/app/schemas/knowledge.py b/app/schemas/knowledge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..2adce1dea51a9a2bfe24393277f25b1590d7ceaa
+--- /dev/null
++++ b/app/schemas/knowledge.py
+@@ -0,0 +1,18 @@
++from pydantic import BaseModel
++
++
++class KnowledgeFileOut(BaseModel):
++    file_id: str
++    file_name: str
++    object_key: str
++    file_type: str
++    file_size: int
++    upload_time: str
++    uploader: str
++
++
++class KnowledgeUploadResult(BaseModel):
++    file_id: str
++    chunks: int
++    failed_chunks: int
++    elapsed_ms: int
+diff --git a/app/schemas/mcp.py b/app/schemas/mcp.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..fc39e1d9b55f1bba7e73476a3cc9bd12c17a7a70
+--- /dev/null
++++ b/app/schemas/mcp.py
+@@ -0,0 +1,12 @@
++from pydantic import BaseModel
++
++
++class ServiceRegistration(BaseModel):
++    name: str
++    url: str
++    metadata: dict | None = None
++
++
++class Heartbeat(BaseModel):
++    service_name: str
++    status: str
+diff --git a/app/schemas/rag.py b/app/schemas/rag.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..bf41108ceb52814f363b14e9b1da48be484d54c0
+--- /dev/null
++++ b/app/schemas/rag.py
+@@ -0,0 +1,15 @@
++from pydantic import BaseModel, Field
++
++from app.schemas.assessment import ScoreResult, SourceBasis
++
++
++class RagQuery(BaseModel):
++    user_query: str
++    top_k: int = Field(default=5, ge=1, le=20)
++    filters: dict | None = None
++
++
++class RagResponse(BaseModel):
++    user_query: str
++    score_result: ScoreResult
++    source_basis: list[SourceBasis]
+diff --git a/app/schemas/text2sql.py b/app/schemas/text2sql.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..e966b5ef54c440c05971bd6cfa6f9897a54fe6b5
+--- /dev/null
++++ b/app/schemas/text2sql.py
+@@ -0,0 +1,18 @@
++from pydantic import BaseModel
++
++
++class Text2SQLTrainRequest(BaseModel):
++    schema: str
++    examples: list[dict]
++
++
++class Text2SQLQueryRequest(BaseModel):
++    query: str
++
++
++class Text2SQLResponse(BaseModel):
++    sql: str
++    columns: list[str]
++    rows: list[list]
++    chart_suggestion: dict | None = None
++    error: str | None = None
+diff --git a/app/schemas/user.py b/app/schemas/user.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..1628619c852ce81dca3cf52f36609c4926807dac
+--- /dev/null
++++ b/app/schemas/user.py
+@@ -0,0 +1,17 @@
++from pydantic import BaseModel, Field
++
++
++class UserCreate(BaseModel):
++    username: str = Field(..., min_length=3)
++    password: str = Field(..., min_length=6)
++
++
++class UserOut(BaseModel):
++    id: int
++    username: str
++    role: str
++
++
++class TokenOut(BaseModel):
++    access_token: str
++    token_type: str = "bearer"
+diff --git a/app/schemas/viz.py b/app/schemas/viz.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..1a44aaae4421623e8bbc30dd7d99a8f514d7ee24
+--- /dev/null
++++ b/app/schemas/viz.py
+@@ -0,0 +1,10 @@
++from pydantic import BaseModel
++
++
++class EChartsRequest(BaseModel):
++    columns: list[str]
++    rows: list[list]
++
++
++class EChartsResponse(BaseModel):
++    echarts_option: dict
+diff --git a/app/services/__init__.py b/app/services/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..340f41ea92331768acb2d6dabb95e2ab3c51f29b
+--- /dev/null
++++ b/app/services/__init__.py
+@@ -0,0 +1,17 @@
++from app.services.assessment import AssessmentService
++from app.services.cache import cacheable
++from app.services.echarts import extract_echarts_json, generate_echarts_option, wrap_echarts_markdown
++from app.services.knowledge import KnowledgeService
++from app.services.rag import RagService
++from app.services.text2sql import Text2SQLService
++
++__all__ = [
++    "AssessmentService",
++    "cacheable",
++    "extract_echarts_json",
++    "generate_echarts_option",
++    "wrap_echarts_markdown",
++    "KnowledgeService",
++    "RagService",
++    "Text2SQLService",
++]
+diff --git a/app/services/assessment.py b/app/services/assessment.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..95877dec0cf356f0c29fd92faff7e683d548e9a5
+--- /dev/null
++++ b/app/services/assessment.py
+@@ -0,0 +1,43 @@
++from datetime import datetime
++
++from app.models.assessment import UserHealthRiskAssessment
++from app.repositories.assessment_repo import AssessmentRepository
++from app.schemas.assessment import ScoreResult
++
++
++class AssessmentService:
++    def __init__(self, repo: AssessmentRepository) -> None:
++        self.repo = repo
++
++    async def save_assessment(
++        self,
++        user_id: int,
++        user_name: str,
++        sex: str,
++        age: int,
++        score: ScoreResult,
++        bmi: str | None = None,
++        weight_change: str | None = None,
++        disease_condition: str | None = None,
++        dietary_intake: str | None = None,
++    ) -> UserHealthRiskAssessment:
++        assessment = UserHealthRiskAssessment(
++            user_id=user_id,
++            user_name=user_name,
++            sex=sex,
++            age=age,
++            assessment_time=datetime.utcnow().isoformat(),
++            assessment_count=1,
++            total_score=score.total_score,
++            nutritional_impairment_score=score.nutritional_impairment_score,
++            disease_severity_score=score.disease_severity_score,
++            age_score=score.age_score,
++            assessment_basis=score.assessment_basis,
++            risk_level=score.risk_level,
++            recommendations=score.recommendations,
++            bmi=bmi,
++            weight_change=weight_change,
++            disease_condition=disease_condition,
++            dietary_intake=dietary_intake,
++        )
++        return await self.repo.create(assessment)
+diff --git a/app/services/cache.py b/app/services/cache.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..cde98463ac4f589f28385041d59b38880b03344e
+--- /dev/null
++++ b/app/services/cache.py
+@@ -0,0 +1,48 @@
++import hashlib
++import json
++from collections.abc import Awaitable, Callable
++from typing import Any
++
++from redis.asyncio import Redis
++
++from app.integrations.redis_client import get_redis
++
++Serializer = Callable[[Any], str]
++Deserializer = Callable[[str], Any]
++
++
++def default_serializer(value: Any) -> str:
++    return json.dumps(value, ensure_ascii=False)
++
++
++def default_deserializer(raw: str) -> Any:
++    return json.loads(raw)
++
++
++def default_key_builder(*args: Any, **kwargs: Any) -> str:
++    raw = json.dumps({"args": args, "kwargs": kwargs}, ensure_ascii=False, default=str)
++    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
++
++
++def cacheable(
++    ttl: int,
++    key_builder: Callable[..., str] | None = None,
++    namespace: str = "default",
++    serializer: Serializer = default_serializer,
++    deserializer: Deserializer = default_deserializer,
++) -> Callable[[Callable[..., Awaitable[Any]]], Callable[..., Awaitable[Any]]]:
++    def decorator(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
++        async def wrapper(*args: Any, **kwargs: Any) -> Any:
++            redis: Redis = get_redis()
++            key_fn = key_builder or default_key_builder
++            cache_key = f"{namespace}:{key_fn(*args, **kwargs)}"
++            cached = await redis.get(cache_key)
++            if cached is not None:
++                return deserializer(cached)
++            result = await func(*args, **kwargs)
++            await redis.set(cache_key, serializer(result), ex=ttl)
++            return result
++
++        return wrapper
++
++    return decorator
+diff --git a/app/services/echarts.py b/app/services/echarts.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..4d6b41bff6157ebeacb58d1042d89526bde9a39a
+--- /dev/null
++++ b/app/services/echarts.py
+@@ -0,0 +1,36 @@
++import json
++from typing import Any
++
++
++def generate_echarts_option(columns: list[str], rows: list[list]) -> dict[str, Any]:
++    if not rows:
++        return {"title": {"text": "No data"}}
++    series = []
++    x_axis = [row[0] for row in rows]
++    values = [row[1] for row in rows] if len(columns) >= 2 else [row[0] for row in rows]
++    chart_type = "bar"
++    if len(values) > 10:
++        chart_type = "line"
++    if len(columns) == 2 and all(isinstance(v, (int, float)) for v in values):
++        chart_type = "bar"
++    if len(columns) == 2 and sum(values) != 0 and len(values) <= 6:
++        chart_type = "pie"
++    if chart_type == "pie":
++        series = [{"type": "pie", "data": [{"name": x, "value": v} for x, v in zip(x_axis, values)]}]
++        option = {"tooltip": {}, "series": series}
++    else:
++        series = [{"type": chart_type, "data": values}]
++        option = {"tooltip": {}, "xAxis": {"type": "category", "data": x_axis}, "yAxis": {}, "series": series}
++    return option
++
++
++def wrap_echarts_markdown(option: dict[str, Any]) -> str:
++    return "echarts\n" + json.dumps(option, ensure_ascii=False)
++
++
++def extract_echarts_json(text: str) -> dict[str, Any]:
++    if "echarts" not in text:
++        return {}
++    _, payload = text.split("echarts", 1)
++    payload = payload.strip()
++    return json.loads(payload)
+diff --git a/app/services/knowledge.py b/app/services/knowledge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..00627252b6f07e3fee8c4b88ee89a437ad3abe2f
+--- /dev/null
++++ b/app/services/knowledge.py
+@@ -0,0 +1,110 @@
++import io
++import time
++from datetime import datetime
++from typing import Any
++
++import pandas as pd
++from pymilvus import Collection
++
++from app.core.config import settings
++from app.core.exceptions import AppError
++from app.integrations.minio_client import get_minio_client
++from app.integrations.milvus_client import ensure_collection, ensure_index
++from app.integrations.ollama_client import get_embeddings
++from app.models.knowledge_file import KnowledgeFile
++from app.repositories.knowledge_repo import KnowledgeRepository
++
++ALLOWED_TYPES = {".pdf", ".doc", ".docx", ".txt", ".md", ".xlsx", ".xls", ".csv"}
++
++
++class KnowledgeService:
++    def __init__(self, repo: KnowledgeRepository):
++        self.repo = repo
++
++    async def upload_file(self, filename: str, content: bytes, uploader: str) -> dict[str, Any]:
++        ext = self._validate_extension(filename)
++        start = time.time()
++        file_id = await self._save_metadata(filename, content, ext, uploader)
++        text = self._extract_text(filename, content, ext)
++        chunks = self._split_text(text)
++        collection = ensure_collection()
++        ensure_index(collection)
++        embeddings = get_embeddings()
++        upserted = self._upsert_chunks(collection, file_id, filename, chunks, embeddings)
++        elapsed_ms = int((time.time() - start) * 1000)
++        return {"file_id": file_id, "chunks": upserted, "failed_chunks": len(chunks) - upserted, "elapsed_ms": elapsed_ms}
++
++    async def _save_metadata(self, filename: str, content: bytes, ext: str, uploader: str) -> str:
++        minio = get_minio_client()
++        object_key = f"{datetime.utcnow().strftime('%Y%m%d')}/{filename}"
++        bucket = settings.minio_bucket
++        if not minio.bucket_exists(bucket):
++            minio.make_bucket(bucket)
++        minio.put_object(bucket, object_key, io.BytesIO(content), length=len(content))
++        knowledge = KnowledgeFile(
++            file_name=filename,
++            object_key=object_key,
++            file_type=ext,
++            file_size=len(content),
++            upload_time=datetime.utcnow().isoformat(),
++            uploader=uploader,
++        )
++        saved = await self.repo.create(knowledge)
++        return saved.file_id
++
++    def _validate_extension(self, filename: str) -> str:
++        ext = "." + filename.split(".")[-1].lower()
++        if ext not in ALLOWED_TYPES:
++            raise AppError(400, f"Unsupported file type: {ext}")
++        return ext
++
++    def _extract_text(self, filename: str, content: bytes, ext: str) -> str:
++        if ext in {".txt", ".md"}:
++            return content.decode("utf-8", errors="ignore")
++        if ext == ".csv":
++            df = pd.read_csv(io.BytesIO(content))
++            return df.to_csv(index=False)
++        if ext in {".xlsx", ".xls"}:
++            df = pd.read_excel(io.BytesIO(content))
++            return df.to_csv(index=False)
++        if ext == ".pdf":
++            import pdfplumber
++
++            text_parts = []
++            with pdfplumber.open(io.BytesIO(content)) as pdf:
++                for page in pdf.pages:
++                    text_parts.append(page.extract_text() or "")
++            return "\n".join(text_parts)
++        if ext in {".doc", ".docx"}:
++            import docx
++
++            doc = docx.Document(io.BytesIO(content))
++            return "\n".join([p.text for p in doc.paragraphs])
++        raise AppError(400, f"No parser for file type: {ext}")
++
++    def _split_text(self, text: str) -> list[str]:
++        parts = [p.strip() for p in text.split("\n\n") if p.strip()]
++        chunks: list[str] = []
++        for part in parts:
++            if len(part) <= 500:
++                chunks.append(part)
++            else:
++                for i in range(0, len(part), 500):
++                    chunks.append(part[i : i + 500])
++        return chunks
++
++    def _upsert_chunks(
++        self, collection: Collection, file_id: str, filename: str, chunks: list[str], embeddings
++    ) -> int:
++        vectors = embeddings.embed_documents(chunks)
++        payload = [
++            [f"{file_id}-{idx}" for idx in range(len(chunks))],
++            [file_id] * len(chunks),
++            chunks,
++            [{"file_name": filename, "chunk_index": idx} for idx in range(len(chunks))],
++            vectors,
++        ]
++        if not chunks:
++            return 0
++        collection.insert(payload)
++        return len(chunks)
+diff --git a/app/services/mcp.py b/app/services/mcp.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..fc0d80cbe07c8f8843f87ae15d74052034c90729
+--- /dev/null
++++ b/app/services/mcp.py
+@@ -0,0 +1,17 @@
++from typing import Any
++
++from app.schemas.mcp import Heartbeat, ServiceRegistration
++
++
++class MCPRegistry:
++    def __init__(self) -> None:
++        self.services: dict[str, dict[str, Any]] = {}
++
++    def register(self, payload: ServiceRegistration) -> None:
++        self.services[payload.name] = {"url": payload.url, "metadata": payload.metadata}
++
++    def heartbeat(self, payload: Heartbeat) -> dict[str, Any]:
++        return {"service": payload.service_name, "status": payload.status}
++
++    def list_services(self) -> dict[str, dict[str, Any]]:
++        return self.services
+diff --git a/app/services/rag.py b/app/services/rag.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..951b1277848182ac1e4440dbaf2bbfb18f8690b4
+--- /dev/null
++++ b/app/services/rag.py
+@@ -0,0 +1,86 @@
++import json
++from typing import Any
++
++from rank_bm25 import BM25Okapi
++
++from app.core.config import settings
++from app.core.exceptions import AppError
++from app.integrations.milvus_client import ensure_collection, ensure_index
++from app.integrations.ollama_client import get_embeddings, get_llm
++from app.schemas.assessment import ScoreResult, SourceBasis
++from app.services.cache import cacheable
++
++
++class RagService:
++    def __init__(self) -> None:
++        self.collection = ensure_collection()
++        ensure_index(self.collection)
++        self.embeddings = get_embeddings()
++        self.llm = get_llm()
++
++    @cacheable(ttl=settings.cache_ttl_seconds, namespace=settings.cache_namespace)
++    async def query_score(self, user_query: str, top_k: int, filters: dict | None) -> dict[str, Any]:
++        retrieved = self._retrieve(user_query, top_k, filters)
++        score_result = await self._generate_score(user_query, retrieved)
++        return {
++            "user_query": user_query,
++            "score_result": score_result.model_dump(),
++            "source_basis": [item.model_dump() for item in retrieved],
++        }
++
++    def _retrieve(self, user_query: str, top_k: int, filters: dict | None) -> list[SourceBasis]:
++        vector = self.embeddings.embed_query(user_query)
++        self.collection.load()
++        expr = None
++        if filters and "file_id" in filters:
++            expr = f"file_id == '{filters['file_id']}'"
++        results = self.collection.search(
++            data=[vector],
++            anns_field="embedding",
++            param={"metric_type": "IP", "params": {"nprobe": 10}},
++            limit=top_k * 3,
++            expr=expr,
++            output_fields=["file_id", "text", "metadata"],
++        )
++        hits = results[0]
++        docs = [hit.entity.get("text") for hit in hits]
++        tokenized = [doc.split() for doc in docs]
++        bm25 = BM25Okapi(tokenized) if docs else None
++        scores = bm25.get_scores(user_query.split()) if bm25 else []
++        max_score = max(scores) if scores else 1
++        min_score = min(scores) if scores else 0
++        sources: list[SourceBasis] = []
++        for idx, hit in enumerate(hits):
++            bm25_score = scores[idx] if scores else 0
++            normalized = (bm25_score - min_score) / (max_score - min_score + 1e-6)
++            final_score = settings.rag_bm25_weight * normalized + settings.rag_vector_weight * hit.score
++            sources.append(
++                SourceBasis(
++                    chunk_id=hit.id,
++                    file_id=hit.entity.get("file_id"),
++                    snippet=hit.entity.get("text")[:200],
++                    score=float(final_score),
++                    reason="融合 BM25 + 向量召回",
++                )
++            )
++        sources.sort(key=lambda item: item.score, reverse=True)
++        return sources[:top_k]
++
++    async def _generate_score(self, user_query: str, sources: list[SourceBasis]) -> ScoreResult:
++        context = "\n".join([f"[{s.file_id}] {s.snippet}" for s in sources])
++        prompt = (
++            "你是营养风险评估专家，使用 NRS2002 评分标准。总分=营养受损(0-3)+疾病严重度(0-3)+年龄(0-1)。"
++            "总分>=3为高风险。请基于用户问题和参考文本给出严格 JSON 输出，字段："
++            "total_score,nutritional_impairment_score,disease_severity_score,age_score,risk_level,"
++            "recommendations,assessment_basis。不要输出多余文本。\n"
++            f"用户问题: {user_query}\n参考: {context}"
++        )
++        for attempt in range(2):
++            response = await self.llm.ainvoke(prompt)
++            try:
++                data = json.loads(response.content)
++                return ScoreResult(**data)
++            except json.JSONDecodeError as exc:
++                if attempt == 1:
++                    raise AppError(500, f"LLM 输出不是合法 JSON: {exc}") from exc
++        raise AppError(500, "评分失败")
+diff --git a/app/services/text2sql.py b/app/services/text2sql.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..10d79703e3d9dbbf480df5aa4ca48fae42e122f5
+--- /dev/null
++++ b/app/services/text2sql.py
+@@ -0,0 +1,61 @@
++import re
++from typing import Any
++
++from sqlalchemy import text
++from sqlalchemy.ext.asyncio import AsyncSession
++
++from app.core.config import settings
++from app.core.exceptions import AppError
++from app.integrations.dify_client import DifyClient
++from app.integrations.redis_client import get_redis
++
++
++class Text2SQLService:
++    def __init__(self, session: AsyncSession) -> None:
++        self.session = session
++        self.client = DifyClient()
++
++    async def train(self, schema: str, examples: list[dict[str, Any]]) -> None:
++        redis = get_redis()
++        await redis.set("text2sql:schema", schema)
++        await redis.set("text2sql:examples", str(examples))
++
++    async def query(self, question: str) -> dict[str, Any]:
++        payload = {
++            "inputs": {"query": question},
++            "response_mode": "blocking",
++            "user": "text2sql",
++        }
++        result = await self.client.chat_messages(payload)
++        sql = result.get("answer", "")
++        sql = sql.strip()
++        if not self._is_safe(sql):
++            raise AppError(400, "Only SELECT statements are allowed")
++        try:
++            rows = await self.session.execute(text(sql))
++            columns = list(rows.keys())
++            data = [list(row) for row in rows.fetchall()]
++            return {"sql": sql, "columns": columns, "rows": data}
++        except Exception as exc:  # noqa: BLE001
++            repaired_sql = await self._repair_sql(sql, str(exc))
++            rows = await self.session.execute(text(repaired_sql))
++            columns = list(rows.keys())
++            data = [list(row) for row in rows.fetchall()]
++            return {"sql": repaired_sql, "columns": columns, "rows": data, "error": str(exc)}
++
++    def _is_safe(self, sql: str) -> bool:
++        if settings.allow_write_sql:
++            return True
++        return bool(re.match(r"^\s*select\b", sql, re.IGNORECASE))
++
++    async def _repair_sql(self, sql: str, error: str) -> str:
++        prompt = {
++            "inputs": {"query": f"SQL: {sql}\nError: {error}\nPlease output a fixed SELECT SQL only."},
++            "response_mode": "blocking",
++            "user": "text2sql",
++        }
++        result = await self.client.chat_messages(prompt)
++        repaired = result.get("answer", sql)
++        if not self._is_safe(repaired):
++            raise AppError(400, "Repaired SQL is not safe")
++        return repaired
+diff --git a/docker-compose.yml b/docker-compose.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..a5fa00f8ef763cc980610782f2774fcb773b9bcb
+--- /dev/null
++++ b/docker-compose.yml
+@@ -0,0 +1,101 @@
++version: "3.9"
++services:
++  mysql:
++    image: mysql:8.0
++    environment:
++      MYSQL_ROOT_PASSWORD: root
++      MYSQL_DATABASE: nutrition
++      MYSQL_USER: nutrition
++      MYSQL_PASSWORD: nutrition
++    ports:
++      - "3306:3306"
++    healthcheck:
++      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
++      interval: 10s
++      timeout: 5s
++      retries: 5
++
++  redis:
++    image: redis:7
++    ports:
++      - "6379:6379"
++    healthcheck:
++      test: ["CMD", "redis-cli", "ping"]
++      interval: 10s
++      timeout: 5s
++      retries: 5
++
++  minio:
++    image: minio/minio:latest
++    command: server /data --console-address ":9001"
++    environment:
++      MINIO_ROOT_USER: minioadmin
++      MINIO_ROOT_PASSWORD: minioadmin
++    ports:
++      - "9000:9000"
++      - "9001:9001"
++    healthcheck:
++      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
++      interval: 10s
++      timeout: 5s
++      retries: 5
++
++  milvus-etcd:
++    image: quay.io/coreos/etcd:v3.5.5
++    environment:
++      ETCD_AUTO_COMPACTION_MODE: revision
++      ETCD_AUTO_COMPACTION_RETENTION: 1000
++      ETCD_QUOTA_BACKEND_BYTES: 4294967296
++      ETCD_SNAPSHOT_COUNT: 50000
++    command: etcd -advertise-client-urls=http://0.0.0.0:2379 -listen-client-urls=http://0.0.0.0:2379
++    ports:
++      - "2379:2379"
++
++  milvus-minio:
++    image: minio/minio:latest
++    command: server /data --console-address ":9002"
++    environment:
++      MINIO_ROOT_USER: minioadmin
++      MINIO_ROOT_PASSWORD: minioadmin
++    ports:
++      - "9002:9000"
++
++  milvus:
++    image: milvusdb/milvus:v2.4.4
++    command: ["milvus", "run", "standalone"]
++    environment:
++      ETCD_ENDPOINTS: milvus-etcd:2379
++      MINIO_ADDRESS: milvus-minio:9000
++    ports:
++      - "19530:19530"
++      - "9091:9091"
++    depends_on:
++      - milvus-etcd
++      - milvus-minio
++    healthcheck:
++      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
++      interval: 10s
++      timeout: 5s
++      retries: 5
++
++  api:
++    build: .
++    env_file:
++      - .env.example
++    ports:
++      - "8018:8018"
++    depends_on:
++      mysql:
++        condition: service_healthy
++      redis:
++        condition: service_healthy
++      minio:
++        condition: service_healthy
++      milvus:
++        condition: service_started
++    healthcheck:
++      test: ["CMD", "curl", "-f", "http://localhost:8018/health"]
++      interval: 10s
++      timeout: 5s
++      retries: 5
++    restart: always
+diff --git a/loadtest/locustfile.py b/loadtest/locustfile.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..f10a69a365a15b29800a886f9cffea5f590c95dc
+--- /dev/null
++++ b/loadtest/locustfile.py
+@@ -0,0 +1,17 @@
++from locust import HttpUser, between, task
++
++
++class APILoadTest(HttpUser):
++    wait_time = between(0.1, 0.5)
++
++    @task(3)
++    def rag_query(self):
++        self.client.post("/api/rag/query_score", json={"user_query": "BMI 如何计算?", "top_k": 3})
++
++    @task(2)
++    def text2sql_query(self):
++        self.client.post("/api/text2sql/query", json={"query": "最近高风险患者数量"})
++
++    @task(1)
++    def health(self):
++        self.client.get("/health")
+diff --git a/requirements.txt b/requirements.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..81dc1be30c51d7baf3e935340c2379ef26c70463
+--- /dev/null
++++ b/requirements.txt
+@@ -0,0 +1,24 @@
++fastapi==0.115.0
++uvicorn==0.30.6
++pydantic==2.9.2
++pydantic-settings==2.5.2
++sqlalchemy==2.0.35
++aiomysql==0.2.0
++aiosqlite==0.20.0
++python-jose==3.3.0
++passlib[bcrypt]==1.7.4
++python-multipart==0.0.9
++httpx==0.27.2
++redis==5.1.1
++minio==7.2.8
++pymilvus==2.4.5
++langchain==0.3.1
++langchain-community==0.3.1
++rank-bm25==0.2.2
++pandas==2.2.3
++python-docx==1.1.2
++pdfplumber==0.11.4
++openpyxl==3.1.5
++pytest==8.3.3
++pytest-asyncio==0.24.0
++locust==2.31.5
+diff --git a/scripts/check_binary_files.py b/scripts/check_binary_files.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..a5f0fa5fff5603f617543c6403ebb679f7c65ee1
+--- /dev/null
++++ b/scripts/check_binary_files.py
+@@ -0,0 +1,35 @@
++from __future__ import annotations
++
++from pathlib import Path
++
++TEXT_CHARS = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x7F)) | set(range(0x80, 0x100)))
++
++
++def is_binary(path: Path) -> bool:
++    data = path.read_bytes()
++    if b"\0" in data:
++        return True
++    nontext = data.translate(None, TEXT_CHARS)
++    return len(nontext) > 0 and len(nontext) / max(len(data), 1) > 0.3
++
++
++def main() -> int:
++    root = Path(__file__).resolve().parents[1]
++    binary_files: list[Path] = []
++    for path in root.rglob("*"):
++        if path.is_file() and ".git" not in path.parts:
++            if is_binary(path):
++                binary_files.append(path)
++
++    if binary_files:
++        print("Binary files detected:")
++        for bf in binary_files:
++            print(bf.relative_to(root))
++        return 1
++
++    print("No binary files detected.")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/scripts/sql/init.sql b/scripts/sql/init.sql
+new file mode 100644
+index 0000000000000000000000000000000000000000..75bbf764dbf091a9358053a883c2f1981ac31ba6
+--- /dev/null
++++ b/scripts/sql/init.sql
+@@ -0,0 +1,87 @@
++CREATE TABLE IF NOT EXISTS users (
++    id INT AUTO_INCREMENT PRIMARY KEY,
++    username VARCHAR(128) NOT NULL UNIQUE,
++    password_hash VARCHAR(255) NOT NULL,
++    role VARCHAR(32) NOT NULL DEFAULT 'user',
++    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
++    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
++);
++
++CREATE TABLE IF NOT EXISTS knowledge_files (
++    file_id VARCHAR(64) PRIMARY KEY,
++    file_name VARCHAR(255) NOT NULL,
++    object_key VARCHAR(255) NOT NULL,
++    file_type VARCHAR(20) NOT NULL,
++    file_size INT NOT NULL,
++    upload_time VARCHAR(64) NOT NULL,
++    uploader VARCHAR(128) NOT NULL,
++    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
++    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
++);
++
++CREATE TABLE IF NOT EXISTS user_health_risk_assessment (
++    id INT AUTO_INCREMENT PRIMARY KEY,
++    user_id INT NOT NULL,
++    user_name VARCHAR(128) NOT NULL,
++    sex VARCHAR(16) NOT NULL,
++    age INT NOT NULL,
++    assessment_time VARCHAR(64) NOT NULL,
++    assessment_count INT DEFAULT 1,
++    total_score INT NOT NULL,
++    nutritional_impairment_score INT NOT NULL,
++    disease_severity_score INT NOT NULL,
++    age_score INT NOT NULL,
++    assessment_basis TEXT NOT NULL,
++    risk_level VARCHAR(32) NOT NULL,
++    recommendations TEXT NOT NULL,
++    bmi VARCHAR(32),
++    weight_change VARCHAR(64),
++    disease_condition VARCHAR(255),
++    dietary_intake VARCHAR(255),
++    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
++    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
++);
++
++DELIMITER $$
++CREATE PROCEDURE AddAssessmentRecord(
++    IN p_user_id INT,
++    IN p_user_name VARCHAR(128),
++    IN p_sex VARCHAR(16),
++    IN p_age INT,
++    IN p_total_score INT,
++    IN p_nutrition_score INT,
++    IN p_disease_score INT,
++    IN p_age_score INT,
++    IN p_assessment_basis TEXT,
++    IN p_recommendations TEXT
++)
++BEGIN
++    DECLARE p_risk_level VARCHAR(32);
++    IF p_total_score >= 3 THEN
++        SET p_risk_level = 'high';
++    ELSE
++        SET p_risk_level = 'low';
++    END IF;
++
++    INSERT INTO user_health_risk_assessment (
++        user_id, user_name, sex, age, assessment_time, assessment_count,
++        total_score, nutritional_impairment_score, disease_severity_score, age_score,
++        assessment_basis, risk_level, recommendations
++    ) VALUES (
++        p_user_id, p_user_name, p_sex, p_age, NOW(), 1,
++        p_total_score, p_nutrition_score, p_disease_score, p_age_score,
++        p_assessment_basis, p_risk_level, p_recommendations
++    );
++END$$
++DELIMITER ;
++
++CREATE OR REPLACE VIEW high_risk_patients AS
++SELECT * FROM user_health_risk_assessment WHERE total_score >= 3;
++
++CREATE OR REPLACE VIEW latest_assessments AS
++SELECT a.* FROM user_health_risk_assessment a
++JOIN (
++    SELECT user_id, MAX(assessment_time) AS latest_time
++    FROM user_health_risk_assessment
++    GROUP BY user_id
++) b ON a.user_id = b.user_id AND a.assessment_time = b.latest_time;
+diff --git a/tests/conftest.py b/tests/conftest.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..f0b405d34260873bacef2f76c3f5577e139a8373
+--- /dev/null
++++ b/tests/conftest.py
+@@ -0,0 +1,47 @@
++import asyncio
++
++import pytest
++from fastapi.testclient import TestClient
++from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
++
++from app.core.deps import get_db
++from app.main import create_app
++from app.models import assessment, knowledge_file, user
++from app.models.base import Base
++
++
++@pytest.fixture(scope="session")
++def event_loop():
++    loop = asyncio.get_event_loop()
++    yield loop
++
++
++@pytest.fixture(scope="session")
++def async_engine():
++    engine = create_async_engine("sqlite+aiosqlite:///:memory:", future=True)
++    return engine
++
++
++@pytest.fixture(scope="session", autouse=True)
++async def prepare_database(async_engine):
++    async with async_engine.begin() as conn:
++        await conn.run_sync(Base.metadata.create_all)
++    yield
++
++
++@pytest.fixture()
++async def session(async_engine):
++    async_session = async_sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
++    async with async_session() as session:
++        yield session
++
++
++@pytest.fixture()
++def client(session):
++    app = create_app()
++
++    async def override_get_db():
++        yield session
++
++    app.dependency_overrides[get_db] = override_get_db
++    return TestClient(app)
+diff --git a/tests/test_auth.py b/tests/test_auth.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..b577dfd333763e9f36362e287b88ebcb4d6f4333
+--- /dev/null
++++ b/tests/test_auth.py
+@@ -0,0 +1,9 @@
++from app.schemas.user import UserCreate
++
++
++def test_register_and_login(client):
++    response = client.post("/api/auth/register", json=UserCreate(username="alice", password="secret123").model_dump())
++    assert response.status_code == 200
++    login = client.post("/api/auth/login", json=UserCreate(username="alice", password="secret123").model_dump())
++    assert login.status_code == 200
++    assert "access_token" in login.json()
+diff --git a/tests/test_knowledge.py b/tests/test_knowledge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..27a7b942dfa2a7bff84f347c4bd46e0a3188c9c0
+--- /dev/null
++++ b/tests/test_knowledge.py
+@@ -0,0 +1,15 @@
++from app.services import knowledge as knowledge_service
++
++
++def test_knowledge_upload(client, monkeypatch):
++    async def fake_upload(self, filename, content, uploader):
++        return {"file_id": "file-1", "chunks": 1, "failed_chunks": 0, "elapsed_ms": 10}
++
++    monkeypatch.setattr(knowledge_service.KnowledgeService, "upload_file", fake_upload)
++    response = client.post(
++        "/api/knowledge/upload",
++        files={"file": ("demo.txt", b"hello", "text/plain")},
++    )
++    assert response.status_code == 200
++    data = response.json()
++    assert data["file_id"] == "file-1"
+diff --git a/tests/test_rag.py b/tests/test_rag.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..48554515a406c38cad5d2f94ab88368175f5bef6
+--- /dev/null
++++ b/tests/test_rag.py
+@@ -0,0 +1,31 @@
++from app.services import rag as rag_service
++
++
++def test_rag_query_score(client, monkeypatch):
++    async def fake_query(self, user_query, top_k, filters):
++        return {
++            "user_query": user_query,
++            "score_result": {
++                "total_score": 3,
++                "nutritional_impairment_score": 1,
++                "disease_severity_score": 1,
++                "age_score": 1,
++                "risk_level": "high",
++                "recommendations": "demo",
++                "assessment_basis": "demo",
++            },
++            "source_basis": [
++                {
++                    "chunk_id": "c1",
++                    "file_id": "f1",
++                    "snippet": "demo",
++                    "score": 0.9,
++                    "reason": "test",
++                }
++            ],
++        }
++
++    monkeypatch.setattr(rag_service.RagService, "query_score", fake_query)
++    response = client.post("/api/rag/query_score", json={"user_query": "test", "top_k": 3})
++    assert response.status_code == 200
++    assert response.json()["score_result"]["total_score"] == 3
+diff --git a/tests/test_text2sql.py b/tests/test_text2sql.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..5d25d60ddc8e14ba3543e23252615726d664ffd7
+--- /dev/null
++++ b/tests/test_text2sql.py
+@@ -0,0 +1,11 @@
++from app.services import text2sql as text2sql_service
++
++
++def test_text2sql_query(client, monkeypatch):
++    async def fake_query(self, question):
++        return {"sql": "SELECT 1", "columns": ["1"], "rows": [[1]]}
++
++    monkeypatch.setattr(text2sql_service.Text2SQLService, "query", fake_query)
++    response = client.post("/api/text2sql/query", json={"query": "count"})
++    assert response.status_code == 200
++    assert response.json()["sql"].lower().startswith("select")
+ 
+EOF
+)
